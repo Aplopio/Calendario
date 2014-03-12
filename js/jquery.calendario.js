@@ -4,20 +4,20 @@
  *
  * Licensed under the MIT license.
  * http://www.opensource.org/licenses/mit-license.php
- * 
+ *
  * Copyright 2012, Codrops
  * http://www.codrops.com
  * Updated by : Bozi Dabel
  */
 ;( function( $, window, undefined ) {
-	
+
 	'use strict';
 
 	$.Calendario = function( options, element ) {
-		
+
 		this.$el = $( element );
 		this._init( options );
-		
+
 	};
 
 	// the options
@@ -52,7 +52,7 @@
 
 	$.Calendario.prototype = {
 		_init : function( options ) {
-			
+
 			// options
 			this.options = $.extend( true, {}, $.Calendario.defaults, options );
 
@@ -68,13 +68,13 @@
 
 			var self = this;
 
-			this.$el.on( 'click.calendario', 'div.fc-row > div', function() {
+			this.$el.on( 'click.calgrid', 'tr > td', function() {
 
 				var $cell = $( this ),
 					idx = $cell.index(),
 					$content = $cell.children( 'div' ),
 					dateProp = {
-						day : $cell.children( 'span.fc-date' ).text(),
+						day : $cell.children( '.calgrid-date' ).text(),
 						month : self.month + 1,
 						monthname : self.options.displayMonthAbbr ? self.options.monthabbrs[ self.month ] : self.options.months[ self.month ],
 						year : self.year,
@@ -87,21 +87,21 @@
 				}
 
 			} );
-			
-			this.$el.on( 'mouseenter.calendario', 'div.fc-row > div', function() {
+
+			this.$el.on( 'mouseenter.calendario', 'tr > td', function() {
 
 				var $cell = $( this ),
 					idx = $cell.index(),
 					$content = $cell.children( 'div' ),
 					dateProp = {
-						day : $cell.children( 'span.fc-date' ).text(),
+						day : $cell.children( '.calgrid-date' ).text(),
 						month : self.month + 1,
 						monthname : self.options.displayMonthAbbr ? self.options.monthabbrs[ self.month ] : self.options.months[ self.month ],
 						year : self.year,
 						weekday : idx + self.options.startIn,
 						weekdayname : self.options.weeks[ (idx==6?0:idx + self.options.startIn) ]
 					};
-				
+
 				if( dateProp.day ) {
 					self.options.onDayHover( $cell, $content, dateProp );
 				}
@@ -113,38 +113,31 @@
 		_generateTemplate : function( callback ) {
 
 			var head = this._getHead(),
-				body = this._getBody(),
-				rowClass;
+				body = this._getBody();
 
-			switch( this.rowTotal ) {
-				case 4 : rowClass = 'fc-four-rows'; break;
-				case 5 : rowClass = 'fc-five-rows'; break;
-				case 6 : rowClass = 'fc-six-rows'; break;
-			}
+			this.$cal = $( '<table class="table table-bordered calgrid">' ).append( head, body );
 
-			this.$cal = $( '<div class="fc-calendar ' + rowClass + '">' ).append( head, body );
-
-			this.$el.find( 'div.fc-calendar' ).remove().end().append( this.$cal );
+			this.$el.find( '.calgrid' ).remove().end().append( this.$cal );
 
 			if( callback ) { callback.call(); }
 
 		},
 		_getHead : function() {
 
-			var html = '<div class="fc-head">';
-		
+			var html = '<thead>';
+
 			for ( var i = 0; i <= 6; i++ ) {
 
 				var pos = i + this.options.startIn,
 					j = pos > 6 ? pos - 6 - 1 : pos;
 
-				html += '<div>';
+				html += '<th>';
 				html += this.options.displayWeekAbbr ? this.options.weekabbrs[ j ] : this.options.weeks[ j ];
-				html += '</div>';
+				html += '</th>';
 
 			}
 
-			html += '</div>';
+			html += '</thead>';
 
 			return html;
 
@@ -159,7 +152,7 @@
 			// day of the week
 			this.startingDay = firstDay.getDay();
 
-			var html = '<div class="fc-body"><div class="fc-row">',
+			var html = '<tbody><tr>',
 				// fill in the days
 				day = 1;
 
@@ -175,10 +168,10 @@
 						today = this.month === this.today.getMonth() && this.year === this.today.getFullYear() && day === this.today.getDate(),
 						past = this.year < this.today.getFullYear() || this.month < this.today.getMonth() && this.year === this.today.getFullYear() || this.month === this.today.getMonth() && this.year === this.today.getFullYear() && day < this.today.getDate(),
 						content = '';
-					    
+
 					if ( day <= monthLength && ( i > 0 || j >= p ) ) {
 
-						inner += '<span class="fc-date">' + day + '</span><span class="fc-weekday">' + this.options.weekabbrs[ j + this.options.startIn > 6 ? j + this.options.startIn - 6 - 1 : j + this.options.startIn ] + '</span>';
+						inner += '<span class="calgrid-date">' + day + '</span>';
 
 						// this day is:
 						var strdate = ( this.month + 1 < 10 ? '0' + ( this.month + 1 ) : this.month + 1 ) + '-' + ( day < 10 ? '0' + day : day ) + '-' + this.year,
@@ -193,7 +186,7 @@
 							dayDataMonthlyYear = this.caldata[ strdatemonthlyyear ];
 						var strdatemonthly = ( this.month + 1 < 10 ? '0' + ( this.month + 1 ) : this.month + 1 ) + '-' + 'DD' + '-' + 'YYYY',
 							dayDataMonthly = this.caldata[ strdatemonthly ];
-						
+
 						if( today ) {
 							var dayDataToday = this.caldata[ "TODAY" ];
 							if( dayDataToday )
@@ -261,7 +254,7 @@
 						}
 
 						if( content !== '' ) {
-							inner += '<div>' + content + '</div>';
+							inner += '<div class="calgrid-date-content">' + content + '</div>';
 						}
 
 						++day;
@@ -271,17 +264,17 @@
 						today = false;
 					}
 
-					var cellClasses = today ? 'fc-today ' : '';
+					var cellClasses = today ? 'calgrid-today ' : '';
 					if ( past ) {
-		              cellClasses += 'fc-past ';
+		              cellClasses += 'calgrid-past ';
 		            }
 					if( content !== '' ) {
-						cellClasses += 'fc-content';
+						cellClasses += 'calgrid-content';
 					}
 
-					html += cellClasses !== '' ? '<div class="' + cellClasses + '">' : '<div>';
+					html += cellClasses !== '' ? '<td class="' + cellClasses + '">' : '<td>';
 					html += inner;
-					html += '</div>';
+					html += '</td>';
 
 				}
 
@@ -289,13 +282,13 @@
 				if (day > monthLength) {
 					this.rowTotal = i + 1;
 					break;
-				} 
+				}
 				else {
-					html += '</div><div class="fc-row">';
+					html += '</tr><tr>';
 				}
 
 			}
-			html += '</div></div>';
+			html += '</tr></tbody>';
 
 			return html;
 
@@ -334,7 +327,7 @@
 		_move : function( period, dir, callback ) {
 
 			if( dir === 'previous' ) {
-				
+
 				if( period === 'month' ) {
 					this.year = this.month > 0 ? this.year : --this.year;
 					this.month = this.month > 0 ? --this.month : 11;
@@ -359,7 +352,7 @@
 			this._generateTemplate( callback );
 
 		},
-		/************************* 
+		/*************************
 		******PUBLIC METHODS *****
 		**************************/
 		getYear : function() {
@@ -378,7 +371,7 @@
 			var row = Math.floor( ( day + this.startingDay - this.options.startIn ) / 7 ),
 				pos = day + this.startingDay - this.options.startIn - ( row * 7 ) - 1;
 
-			return this.$cal.find( 'div.fc-body' ).children( 'div.fc-row' ).eq( row ).children( 'div' ).eq( pos ).children( 'div' );
+			return this.$cal.find( 'tbody' ).children( 'tr' ).eq( row ).children( 'td' ).eq( pos ).children( 'div' );
 
 		},
 		setData : function( caldata ) {
@@ -418,68 +411,68 @@
 		}
 
 	};
-	
+
 	var logError = function( message ) {
 
 		if ( window.console ) {
 
 			window.console.error( message );
-		
+
 		}
 
 	};
-	
+
 	$.fn.calendario = function( options ) {
 
 		var instance = $.data( this, 'calendario' );
-		
+
 		if ( typeof options === 'string' ) {
-			
+
 			var args = Array.prototype.slice.call( arguments, 1 );
-			
+
 			this.each(function() {
-			
+
 				if ( !instance ) {
 
 					logError( "cannot call methods on calendario prior to initialization; " +
 					"attempted to call method '" + options + "'" );
 					return;
-				
+
 				}
-				
+
 				if ( !$.isFunction( instance[options] ) || options.charAt(0) === "_" ) {
 
 					logError( "no such method '" + options + "' for calendario instance" );
 					return;
-				
+
 				}
-				
+
 				instance[ options ].apply( instance, args );
-			
+
 			});
-		
-		} 
+
+		}
 		else {
-		
+
 			this.each(function() {
-				
+
 				if ( instance ) {
 
 					instance._init();
-				
+
 				}
 				else {
 
 					instance = $.data( this, 'calendario', new $.Calendario( options, this ) );
-				
+
 				}
 
 			});
-		
+
 		}
-		
+
 		return instance;
-		
+
 	};
-	
+
 } )( jQuery, window );
