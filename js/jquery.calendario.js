@@ -170,95 +170,9 @@
 						content = '';
 
 					if ( day <= monthLength && ( i > 0 || j >= p ) ) {
-
 						inner += '<span class="calgrid-date">' + day + '</span>';
-
-						// this day is:
-						var strdate = ( this.month + 1 < 10 ? '0' + ( this.month + 1 ) : this.month + 1 ) + '-' + ( day < 10 ? '0' + day : day ) + '-' + this.year,
-							dayData = this.caldata[ strdate ];
-						var strdateyear = ( this.month + 1 < 10 ? '0' + ( this.month + 1 ) : this.month + 1 ) + '-' + ( day < 10 ? '0' + day : day ) + '-' + 'YYYY',
-							dayDataYear = this.caldata[ strdateyear ];
-						var strdatemonth = 'MM' + '-' + ( day < 10 ? '0' + day : day ) + '-' + this.year,
-							dayDataMonth = this.caldata[ strdatemonth ];
-						var strdatemonthyear = 'MM' + '-' + ( day < 10 ? '0' + day : day ) + '-' + 'YYYY',
-							dayDataMonthYear = this.caldata[ strdatemonthyear ];
-						var strdatemonthlyyear = ( this.month + 1 < 10 ? '0' + ( this.month + 1 ) : this.month + 1 ) + '-' + 'DD' + '-' + this.year,
-							dayDataMonthlyYear = this.caldata[ strdatemonthlyyear ];
-						var strdatemonthly = ( this.month + 1 < 10 ? '0' + ( this.month + 1 ) : this.month + 1 ) + '-' + 'DD' + '-' + 'YYYY',
-							dayDataMonthly = this.caldata[ strdatemonthly ];
-
-						if( today ) {
-							var dayDataToday = this.caldata[ "TODAY" ];
-							if( dayDataToday )
-								content += dayDataToday;
-						}
-						if( dayData ) {
-							content += dayData;
-						}
-						if( dayDataMonth ) {
-							content += dayDataMonth;
-						}
-						if( dayDataMonthlyYear ) {
-							if( dayDataMonthlyYear['start'] && dayDataMonthlyYear['end'] )
-							{
-								if( (day >= dayDataMonthlyYear['start']) && (day <= dayDataMonthlyYear['end']) )
-									content += dayDataMonthlyYear['content'];
-							}
-							else if( dayDataMonthlyYear['start'] > 1 )
-							{
-								if( day >= dayDataMonthlyYear['start'] )
-									content += dayDataMonthlyYear['content'];
-							}
-							else if( dayDataMonthlyYear['end'] > 0 )
-							{
-								if( day <= dayDataMonthlyYear['end'] )
-									content += dayDataMonthlyYear['content'];
-							}
-							else
-							{
-								if( dayDataMonthlyYear['content'] )
-									content += dayDataMonthlyYear['content'];
-								else
-									content += dayDataMonthlyYear;
-							}
-						}
-						if( dayDataMonthly ) {
-							if( dayDataMonthly['start'] && dayDataMonthly['end'] )
-							{
-								if( (day >= dayDataMonthly['start']) && (day <= dayDataMonthly['end']) )
-									content += dayDataMonthly['content'];
-							}
-							else if( dayDataMonthly['start'] > 1 )
-							{
-								if( day >= dayDataMonthly['start'] )
-									content += dayDataMonthly['content'];
-							}
-							else if( dayDataMonthly['end'] > 0 )
-							{
-								if(day <= dayDataMonthly['end'])
-									content += dayDataMonthly['content'];
-							}
-							else
-							{
-								if( dayDataMonthly['content'] )
-									content += dayDataMonthly['content'];
-								else
-									content += dayDataMonthly;
-							}
-						}
-						if( dayDataMonthYear ) {
-							content += dayDataMonthYear;
-						}
-						if( dayDataYear ) {
-							content += dayDataYear;
-						}
-
-						if( content !== '' ) {
-							inner += '<div class="calgrid-date-content">' + content + '</div>';
-						}
-
+                        inner += '<div class="calgrid-date-events"></div>';
 						++day;
-
 					}
 					else {
 						today = false;
@@ -269,13 +183,12 @@
 		              cellClasses += 'calgrid-past ';
 		            }
 					if( content !== '' ) {
-						cellClasses += 'calgrid-content';
+						cellClasses += 'calgrid-cell';
 					}
 
 					html += cellClasses !== '' ? '<td class="' + cellClasses + '">' : '<td>';
 					html += inner;
 					html += '</td>';
-
 				}
 
 				// stop making rows if we've run out of days
@@ -293,65 +206,7 @@
 			return html;
 
 		},
-		// based on http://stackoverflow.com/a/8390325/989439
-		_isValidDate : function( date ) {
 
-			date = date.replace(/-/gi,'');
-			var month = parseInt( date.substring( 0, 2 ), 10 ),
-				day = parseInt( date.substring( 2, 4 ), 10 ),
-				year = parseInt( date.substring( 4, 8 ), 10 );
-
-			if( ( month < 1 ) || ( month > 12 ) ) {
-				return false;
-			}
-			else if( ( day < 1 ) || ( day > 31 ) )  {
-				return false;
-			}
-			else if( ( ( month == 4 ) || ( month == 6 ) || ( month == 9 ) || ( month == 11 ) ) && ( day > 30 ) )  {
-				return false;
-			}
-			else if( ( month == 2 ) && ( ( ( year % 400 ) == 0) || ( ( year % 4 ) == 0 ) ) && ( ( year % 100 ) != 0 ) && ( day > 29 ) )  {
-				return false;
-			}
-			else if( ( month == 2 ) && ( ( year % 100 ) == 0 ) && ( day > 29 ) )  {
-				return false;
-			}
-
-			return {
-				day : day,
-				month : month,
-				year : year
-			};
-
-		},
-		_move : function( period, dir, callback ) {
-
-			if( dir === 'previous' ) {
-
-				if( period === 'month' ) {
-					this.year = this.month > 0 ? this.year : --this.year;
-					this.month = this.month > 0 ? --this.month : 11;
-				}
-				else if( period === 'year' ) {
-					this.year = --this.year;
-				}
-
-			}
-			else if( dir === 'next' ) {
-
-				if( period === 'month' ) {
-					this.year = this.month < 11 ? this.year : ++this.year;
-					this.month = this.month < 11 ? ++this.month : 0;
-				}
-				else if( period === 'year' ) {
-					this.year = ++this.year;
-				}
-
-			}
-
-			this._generateTemplate( callback );
-
-		},
 		/*************************
 		******PUBLIC METHODS *****
 		**************************/
@@ -362,7 +217,9 @@
 			return this.month + 1;
 		},
 		getMonthName : function() {
-			return this.options.displayMonthAbbr ? this.options.monthabbrs[ this.month ] : this.options.months[ this.month ];
+			return this.options.displayMonthAbbr ?
+                this.options.monthabbrs[ this.month ] :
+                this.options.months[ this.month ];
 		},
 		// gets the cell's content div associated to a day of the current displayed month
 		// day : 1 - [28||29||30||31]
@@ -371,45 +228,11 @@
 			var row = Math.floor( ( day + this.startingDay - this.options.startIn ) / 7 ),
 				pos = day + this.startingDay - this.options.startIn - ( row * 7 ) - 1;
 
-			return this.$cal.find( 'tbody' ).children( 'tr' ).eq( row ).children( 'td' ).eq( pos ).children( 'div' );
+			return this.$cal.find( 'tbody' )
+                .children( 'tr' ).eq( row )
+                .children( 'td' ).eq( pos );
 
 		},
-		setData : function( caldata ) {
-
-			caldata = caldata || {};
-			$.extend( this.caldata, caldata );
-			this._generateTemplate();
-
-		},
-		// goes to today's month/year
-		gotoNow : function( callback ) {
-
-			this.month = this.today.getMonth();
-			this.year = this.today.getFullYear();
-			this._generateTemplate( callback );
-
-		},
-		// goes to month/year
-		gotoMonth : function( month, year, callback ) {
-
-			this.month = month - 1;
-			this.year = year;
-			this._generateTemplate( callback );
-
-		},
-		gotoPreviousMonth : function( callback ) {
-			this._move( 'month', 'previous', callback );
-		},
-		gotoPreviousYear : function( callback ) {
-			this._move( 'year', 'previous', callback );
-		},
-		gotoNextMonth : function( callback ) {
-			this._move( 'month', 'next', callback );
-		},
-		gotoNextYear : function( callback ) {
-			this._move( 'year', 'next', callback );
-		}
-
 	};
 
 	var logError = function( message ) {
