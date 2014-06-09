@@ -224,8 +224,11 @@
 		// gets the cell's content div associated to a day of the current displayed month
 		// day : 1 - [28||29||30||31]
 		getCell : function( day ) {
+            var startingDayOffset = this.startingDay - this.options.startIn,
+			    offset = startingDayOffset < 0 ? 6 + startingDayOffset + 1 :
+                    startingDayOffset;
 
-			var row = Math.floor( ( day + this.startingDay - this.options.startIn ) / 7 ),
+			var row = Math.floor( ( day + offset ) / 7 ),
 				pos = day + this.startingDay - this.options.startIn - ( row * 7 ) - 1;
 
 			return this.$cal.find( 'tbody' )
