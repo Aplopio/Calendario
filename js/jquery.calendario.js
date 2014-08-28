@@ -171,7 +171,7 @@
 
 					if ( day <= monthLength && ( i > 0 || j >= p ) ) {
 						inner += '<span class="calgrid-date">' + day + '</span>';
-                        inner += '<div class="calgrid-date-events"></div>';
+						inner += '<div class="calgrid-date-events"></div>';
 						++day;
 					}
 					else {
@@ -180,8 +180,8 @@
 
 					var cellClasses = today ? 'calgrid-today ' : '';
 					if ( past ) {
-		              cellClasses += 'calgrid-past ';
-		            }
+						cellClasses += 'calgrid-past ';
+					}
 					if( content !== '' ) {
 						cellClasses += 'calgrid-cell';
 					}
@@ -218,24 +218,24 @@
 		},
 		getMonthName : function() {
 			return this.options.displayMonthAbbr ?
-                this.options.monthabbrs[ this.month ] :
-                this.options.months[ this.month ];
+				this.options.monthabbrs[ this.month ] :
+				this.options.months[ this.month ];
 		},
 		// gets the cell's content div associated to a day of the current displayed month
 		// day : 1 - [28||29||30||31]
 		getCell : function( day ) {
-            var startingDayOffset = this.startingDay - this.options.startIn,
-			    offset = startingDayOffset < 0 ? 6 + startingDayOffset + 1 :
-                    startingDayOffset;
+			var startingDayOffset = this.startingDay - this.options.startIn,
+				offset = startingDayOffset < 0 ? 6 + startingDayOffset + 1 :
+					startingDayOffset;
 
 			var row = Math.floor( ( day + offset ) / 7 ),
 				pos = day + this.startingDay - this.options.startIn - ( row * 7 ) - 1;
 
 			return this.$cal.find( 'tbody' )
-                .children( 'tr' ).eq( row )
-                .children( 'td' ).eq( pos );
+				.children( 'tr' ).eq( row )
+				.children( 'td' ).eq( pos );
 
-		},
+		}
 	};
 
 	var logError = function( message ) {
