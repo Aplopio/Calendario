@@ -225,10 +225,12 @@
 		// day : 1 - [28||29||30||31]
 		getCell : function( day ) {
 			var startingDayOffset = this.startingDay - this.options.startIn,
-				offset = startingDayOffset < 0 ? 6 + startingDayOffset + 1 :
+				offset = startingDayOffset < 0 ? startingDayOffset + 7 :
 					startingDayOffset;
 
-			var row = Math.floor( ( day + offset ) / 7 ),
+			// day starts from 1, but `startingDay` & `startIn` start from 0,
+			// so subtract 1 from day to normalize
+			var row = Math.floor( ( day - 1 + offset ) / 7 ),
 				pos = day + this.startingDay - this.options.startIn - ( row * 7 ) - 1;
 
 			return this.$cal.find( 'tbody' )
